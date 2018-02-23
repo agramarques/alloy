@@ -61,7 +61,15 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
--- fazer uma função pra achar os projetos que tem bugs
+pred temBug[p:Projeto]{
+	#(p.raiz.subPastas.codigo.bugs) > 0
+}
+
+-- função pra achar os projetos que tem bugs
+fun bugados[]: set Projeto{
+	Cliente.projetos.raiz.subPastas.codigo.bugs.~bugs.~codigo.~subPastas.~raiz
+}
+
 -- ver como lidar com o tempo (dias) e ordenar por tempo, pra pegar o mais recente
 
 pred show[]{}
