@@ -61,5 +61,8 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+-- fazer uma função pra achar os projetos que tem bugs
+-- ver como lidar com o tempo (dias) e ordenar por tempo, pra pegar o mais recente
+
 pred show[]{}
 run show for 2
