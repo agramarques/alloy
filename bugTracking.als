@@ -1,5 +1,10 @@
 module bugTracking
 
+open util/ordering[Time] as to
+
+sig Time {
+}
+
 sig Cliente {
 	projetos: some Projeto
 }
@@ -67,7 +72,7 @@ pred temBug[p:Projeto]{
 
 -- função pra achar os projetos que tem bugs
 fun bugados[]: set Projeto{
-	Cliente.projetos.raiz.subPastas.codigo.bugs.~bugs.~codigo.~subPastas.~raiz
+	Bug.~bugs.~codigo.~subPastas.~raiz
 }
 
 -- ver como lidar com o tempo (dias) e ordenar por tempo, pra pegar o mais recente
