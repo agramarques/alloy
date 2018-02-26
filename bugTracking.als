@@ -5,7 +5,7 @@ open util/ordering[Time] as to
 sig Time {
 }
 
-one sig Repositorio {
+sig Repositorio {
 	clientes: set Cliente
 }
 
@@ -41,7 +41,7 @@ sig Relatorio {
 }
 
 fact {
-	all c: Cliente | one c.~clientes
+	all c: Cliente | lone c.~clientes
 }
 
 -- cada projeto so pertence a um cliente:
@@ -74,6 +74,10 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+pred addCliente[r, r': Repositorio, c:Cliente]{
+	r'.clientes = r.clientes + c
+}
+
 pred temBug[p:Projeto]{
 	#(p.raiz.subPastas.codigo.bugs) > 0
 }
@@ -85,7 +89,14 @@ fun bugados[]: set Projeto{
 
 -- ver como lidar com o tempo (dias) e ordenar por tempo, pra pegar o mais recente
 
-pred show[]{
+pred showAdd[r, r': Repositorio, c:Cliente]{
+	r != r'
+	addCliente[r,r',c]
+	#Repositorio = 2
 }
 
-run show for 3
+pred show[]{
+--	#Cliente = 2
+}
+
+run showAdd for 3 but 2 Repositorio
