@@ -5,6 +5,10 @@ open util/ordering[Time] as to
 sig Time {
 }
 
+one sig Repositorio {
+	clientes: set Cliente
+}
+
 sig Cliente {
 	projetos: some Projeto
 }
@@ -34,6 +38,10 @@ gravidade <= 3
 }
 
 sig Relatorio {
+}
+
+fact {
+	all c: Cliente | one c.~clientes
 }
 
 -- cada projeto so pertence a um cliente:
@@ -77,5 +85,7 @@ fun bugados[]: set Projeto{
 
 -- ver como lidar com o tempo (dias) e ordenar por tempo, pra pegar o mais recente
 
-pred show[]{}
-run show for 2
+pred show[]{
+}
+
+run show for 3
