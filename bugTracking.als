@@ -1,6 +1,7 @@
 module bugTracking
 
 open util/ordering[Time] as to
+open util/ordering[Bug] as bo
 
 sig Time {
 }
@@ -74,6 +75,7 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+-- checar se é realmente essa a idéia, e se deve replicar pras outras sigs
 pred addCliente[r, r': Repositorio, c:Cliente]{
 	r'.clientes = r.clientes + c
 }
@@ -87,7 +89,11 @@ fun bugados[]: set Projeto{
 	Bug.~bugs.~codigo.~subPastas.~raiz
 }
 
--- ver como lidar com o tempo (dias) e ordenar por tempo, pra pegar o mais recente
+-- ver como limitar essa ordenação aos bugs de um unico cliente
+-- função pra achar o projeto do bug mais recente (assume a ordenacao dos bugs pelo seu numero)
+fun lastBugado[] : lone Projeto {
+	(bo/last).~bugs.~codigo.~subPastas.~raiz
+}
 
 pred showAdd[r, r': Repositorio, c:Cliente]{
 	r != r'
