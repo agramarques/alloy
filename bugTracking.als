@@ -6,7 +6,7 @@ open util/ordering[Bug] as bo
 sig Time {
 }
 
-sig Repositorio {
+one sig Repositorio {
 	clientes: set Cliente
 }
 
@@ -16,6 +16,9 @@ sig Cliente {
 
 sig Projeto {
 	raiz: one Pasta
+}
+
+sig ProjetoBugado extends Projeto{
 }
 
 sig Pasta {
@@ -42,7 +45,13 @@ sig Relatorio {
 }
 
 fact {
-	all c: Cliente | lone c.~clientes
+	all b: ProjetoBugado | #b.raiz.subPastas.codigo.bugs > 0
+	no p: (Projeto - ProjetoBugado) | #p.raiz.subPastas.codigo.bugs > 0
+}
+
+-- todo cliente deve pertencer ao repositorio
+fact {
+	all c: Cliente | one c.~clientes
 }
 
 -- cada projeto so pertence a um cliente:
@@ -75,34 +84,25 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
--- checar se é realmente essa a idéia, e se deve replicar pras outras sigs
-pred addCliente[r, r': Repositorio, c:Cliente]{
-	r'.clientes = r.clientes + c
-}
 
 pred temBug[p:Projeto]{
 	#(p.raiz.subPastas.codigo.bugs) > 0
 }
-
+/*
 -- função pra achar os projetos que tem bugs
 fun bugados[]: set Projeto{
 	Bug.~bugs.~codigo.~subPastas.~raiz
 }
-
+*/
 -- ver como limitar essa ordenação aos bugs de um unico cliente
 -- função pra achar o projeto do bug mais recente (assume a ordenacao dos bugs pelo seu numero)
 fun lastBugado[] : lone Projeto {
 	(bo/last).~bugs.~codigo.~subPastas.~raiz
 }
 
-pred showAdd[r, r': Repositorio, c:Cliente]{
-	r != r'
-	addCliente[r,r',c]
-	#Repositorio = 2
-}
 
 pred show[]{
---	#Cliente = 2
+	#Cliente = 2
 }
 
-run showAdd for 3 but 2 Repositorio
+run show for 3
