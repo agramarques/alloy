@@ -2,6 +2,7 @@ module bugTracking
 
 open util/ordering[Time] as to
 open util/ordering[Bug] as bo
+open util/ordering[SubPasta] as so
 
 sig Time {
 }
@@ -88,21 +89,20 @@ fact {
 pred temBug[p:Projeto]{
 	#(p.raiz.subPastas.codigo.bugs) > 0
 }
-/*
--- função pra achar os projetos que tem bugs
-fun bugados[]: set Projeto{
-	Bug.~bugs.~codigo.~subPastas.~raiz
+
+-- função pra achar os projetos de um cliente que tem bugs
+fun bugados[c:Cliente]: set Projeto{
+	c.projetos & ProjetoBugado
 }
-*/
+
 -- ver como limitar essa ordenação aos bugs de um unico cliente
 -- função pra achar o projeto do bug mais recente (assume a ordenacao dos bugs pelo seu numero)
 fun lastBugado[] : lone Projeto {
 	(bo/last).~bugs.~codigo.~subPastas.~raiz
 }
 
-
 pred show[]{
 	#Cliente = 2
 }
 
-run show for 3
+run show for 5
