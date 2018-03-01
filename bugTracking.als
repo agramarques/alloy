@@ -2,6 +2,7 @@ module bugTracking
 
 open util/ordering[Dia] as do
 open util/ordering[Bug] as bo
+open util/ordering[Codigo] as co
 
 sig Dia {
 	alocacao : one Codigo
@@ -94,14 +95,29 @@ pred temBug[p:Projeto]{
 	#(p.raiz.subPastas.codigo.bugs) > 0
 }
 
+-- funçao de comparação entre codigos pra realizar a ordenação do subconjunto (achar o mais recente por cliente)
+fun maior[c1,c2 : Codigo] : one Codigo {
+	(c1 in c2.^next) => c1 else c2
+}
+	
+
 -- retorna o cliente que possui o codigo pra facilitar o acesso
 fun cliente[c:Codigo] : one Cliente {
-		c.~codigo.~subPastas.~raiz.~projetos
+	c.~codigo.~subPastas.~raiz.~projetos
+}
+
+fun codigos[c:Cliente] : set Codigo {
+	c.projetos.raiz.subPastas.codigo
 }
 
 -- função pra achar os projetos de um cliente que tem bugs
 fun bugados[c:Cliente]: set Projeto{
 	c.projetos & ProjetoBugado
+}
+
+-- acha a versao do codigo mais recente para um dado cliente
+fun lastC[c:Cliente] : one Codigo{
+	codigos[c] - codigos[c].^prev
 }
 
 -- ver como limitar essa ordenação aos bugs de um unico cliente
@@ -117,7 +133,7 @@ assert alocadoSemBug {
 check alocadoSemBug
 */
 pred show[]{
-	#Cliente = 2
+	--#Cliente = 2
 }
 
-run show for 3
+run show for 5
