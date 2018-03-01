@@ -4,7 +4,8 @@ open util/ordering[Dia] as do
 open util/ordering[Codigo] as co
 
 sig Dia {
-	alocacao : one Codigo
+	alocacao : one Codigo,
+	resultado: set Bug
 }
 
 one sig Repositorio {
@@ -86,6 +87,11 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+fact{
+	all d:Dia, b:d.resultado | b in d.alocacao.bugs
+	all b:Bug | b in Dia.resultado
+}
+
 -- o time nao pode trabalhar dois dias consecutivos para um mesmo cliente
 fact {
 	all d:Dia | cliente[d.alocacao] != cliente[(d.next).alocacao]
@@ -125,4 +131,4 @@ pred show[]{
 	--#Cliente = 2
 }
 
-run show for 5
+run show for 5 but 7 Dia
