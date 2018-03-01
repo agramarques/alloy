@@ -1,10 +1,10 @@
 module bugTracking
 
-open util/ordering[Time] as to
+open util/ordering[Dia] as do
 open util/ordering[Bug] as bo
-open util/ordering[SubPasta] as so
 
-sig Time {
+sig Dia {
+	alocacao : one Codigo
 }
 
 one sig Repositorio {
@@ -31,7 +31,7 @@ sig SubPasta {
 }
 
 sig Codigo {
-	bugs: set Bug
+	bugs: set Bug,
 }
 
 sig Bug {
@@ -85,9 +85,18 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+-- o time nao pode trabalhar dois dias consecutivos para um mesmo cliente
+fact {
+	all d:Dia | cliente[d.alocacao] != cliente[(d.next).alocacao]
+}
 
 pred temBug[p:Projeto]{
 	#(p.raiz.subPastas.codigo.bugs) > 0
+}
+
+-- retorna o cliente que possui o codigo pra facilitar o acesso
+fun cliente[c:Codigo] : one Cliente {
+		c.~codigo.~subPastas.~raiz.~projetos
 }
 
 -- função pra achar os projetos de um cliente que tem bugs
@@ -100,9 +109,15 @@ fun bugados[c:Cliente]: set Projeto{
 fun lastBugado[] : lone Projeto {
 	(bo/last).~bugs.~codigo.~subPastas.~raiz
 }
+/*
+assert alocadoSemBug {
+	all d:Dia | #d.alocacao.bugs > 0
+}
 
+check alocadoSemBug
+*/
 pred show[]{
 	#Cliente = 2
 }
 
-run show for 5
+run show for 3
