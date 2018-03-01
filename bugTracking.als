@@ -89,6 +89,7 @@ fact {
 -- o time nao pode trabalhar dois dias consecutivos para um mesmo cliente
 fact {
 	all d:Dia | cliente[d.alocacao] != cliente[(d.next).alocacao]
+	all d:Dia | d.alocacao = lastC[cliente[d.alocacao]]
 }
 
 pred temBug[p:Projeto]{
