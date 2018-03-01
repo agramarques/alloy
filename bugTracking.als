@@ -1,7 +1,6 @@
 module bugTracking
 
 open util/ordering[Dia] as do
-open util/ordering[Bug] as bo
 open util/ordering[Codigo] as co
 
 sig Dia {
@@ -46,6 +45,7 @@ gravidade <= 3
 sig Relatorio {
 }
 
+-- todos (e somente) projetos bugados possuem bugs
 fact {
 	all b: ProjetoBugado | #b.raiz.subPastas.codigo.bugs > 0
 	no p: (Projeto - ProjetoBugado) | #p.raiz.subPastas.codigo.bugs > 0
@@ -101,12 +101,12 @@ fun maior[c1,c2 : Codigo] : one Codigo {
 	(c1 in c2.^next) => c1 else c2
 }
 	
-
 -- retorna o cliente que possui o codigo pra facilitar o acesso
 fun cliente[c:Codigo] : one Cliente {
 	c.~codigo.~subPastas.~raiz.~projetos
 }
 
+-- atalho para os codigos de um cliente
 fun codigos[c:Cliente] : set Codigo {
 	c.projetos.raiz.subPastas.codigo
 }
@@ -121,18 +121,6 @@ fun lastC[c:Cliente] : one Codigo{
 	codigos[c] - codigos[c].^prev
 }
 
--- ver como limitar essa ordenação aos bugs de um unico cliente
--- função pra achar o projeto do bug mais recente (assume a ordenacao dos bugs pelo seu numero)
-fun lastBugado[] : lone Projeto {
-	(bo/last).~bugs.~codigo.~subPastas.~raiz
-}
-/*
-assert alocadoSemBug {
-	all d:Dia | #d.alocacao.bugs > 0
-}
-
-check alocadoSemBug
-*/
 pred show[]{
 	--#Cliente = 2
 }
