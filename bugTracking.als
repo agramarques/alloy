@@ -1,5 +1,8 @@
 module bugTracking
 
+-- ver questao de que o time só analisa projetos depois de todos os bugs corrigidos
+-- como saber se tem bugs antes do time encontrar -encontra bug em todos os codigos ?
+
 open util/ordering[Dia] as do
 open util/ordering[Codigo] as co
 
@@ -87,6 +90,8 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+-- os bugs encontrados em um dia tem de pertencer ao codigo sendo analisado naquele dia
+-- e todo bug tem de estar no resultado de algum dia
 fact{
 	all d:Dia, b:d.resultado | b in d.alocacao.bugs
 	all b:Bug | b in Dia.resultado
