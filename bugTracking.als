@@ -1,8 +1,5 @@
 module bugTracking
 
--- falta só ver como (ou se deve) sinalizar que um bug foi corrigido
--- como saber se tem bugs antes do time encontrar -encontra bug em todos os codigos ?
-
 open util/ordering[Dia] as do
 open util/ordering[Codigo] as co
 
@@ -94,9 +91,10 @@ fact {
 
 -- no primeiro dia a equipe de correção não tem o que fazer (nenhum bug foi ident. ainda)
 -- a cada dia os bugs ident. pela eq. de revisao sao acrescentados à alocação do time de correção
+-- e códigos já corrigidos saem da alocação do time de correção
 fact {
 	(do/first).correcao = none
-	all d:Dia | d.correcao = (d.prev).correcao + (d.prev).revisao
+	all d:Dia | d.correcao = (d.prev).correcao + (d.prev).revisao - d.corrigido.~bugs
 }
 
 -- os bugs encontrados em um dia tem de pertencer ao codigo sendo analisado naquele dia
