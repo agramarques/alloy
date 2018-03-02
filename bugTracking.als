@@ -8,8 +8,9 @@ open util/ordering[Codigo] as co
 
 sig Dia {
 	revisao : one Codigo,
-	resultado: set Bug,
-	correcao :	 set Codigo
+	identificado: set Bug,
+	correcao :	 set Codigo,
+	corrigido : set Bug
 }
 
 one sig Repositorio {
@@ -91,16 +92,25 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+-- no primeiro dia a equipe de correção não tem o que fazer (nenhum bug foi ident. ainda)
+-- a cada dia os bugs ident. pela eq. de revisao sao acrescentados à alocação do time de correção
 fact {
 	(do/first).correcao = none
 	all d:Dia | d.correcao = (d.prev).correcao + (d.prev).revisao
 }
 
 -- os bugs encontrados em um dia tem de pertencer ao codigo sendo analisado naquele dia
--- e todo bug tem de estar no resultado de algum dia
+-- e todo bug tem de estar nos identificados de algum dia
 fact{
-	all d:Dia, b:d.resultado | b in d.revisao.bugs
-	all b:Bug | b in Dia.resultado
+	all d:Dia, b:d.identificado | b in d.revisao.bugs
+	all b:Bug | b in Dia.identificado
+}
+
+-- na nossa instância, a equipe de correcao resolve os bug em 2 dias (dentro de uma semana) pra
+-- facilitar a visualização e diminuir o escopo necessário
+fact{
+	(do/first).corrigido = none
+	all d:Dia | d.corrigido = (d.prev).corrigido + (d.prev.prev).correcao.bugs
 }
 
 -- o time nao pode trabalhar dois dias consecutivos para um mesmo cliente
@@ -150,4 +160,4 @@ pred show[]{
 	--#Cliente = 2
 }
 
-run show for 10 but 7 Dia
+run show for 10
