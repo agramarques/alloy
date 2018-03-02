@@ -7,8 +7,9 @@ open util/ordering[Dia] as do
 open util/ordering[Codigo] as co
 
 sig Dia {
-	alocacao : one Codigo,
-	resultado: set Bug
+	revisao : one Codigo,
+	resultado: set Bug,
+	correcao :	 set Codigo
 }
 
 one sig Repositorio {
@@ -90,17 +91,22 @@ fact {
 	all b:Bug | one b.~bugs
 }
 
+fact {
+	(do/first).correcao = none
+	all d:Dia | d.correcao = (d.prev).correcao + (d.prev).revisao
+}
+
 -- os bugs encontrados em um dia tem de pertencer ao codigo sendo analisado naquele dia
 -- e todo bug tem de estar no resultado de algum dia
 fact{
-	all d:Dia, b:d.resultado | b in d.alocacao.bugs
+	all d:Dia, b:d.resultado | b in d.revisao.bugs
 	all b:Bug | b in Dia.resultado
 }
 
 -- o time nao pode trabalhar dois dias consecutivos para um mesmo cliente
 fact {
-	all d:Dia | cliente[d.alocacao] != cliente[(d.next).alocacao]
-	all d:Dia | d.alocacao = lastC[cliente[d.alocacao]]
+	all d:Dia | cliente[d.revisao] != cliente[(d.next).revisao]
+	all d:Dia | d.revisao = lastC[cliente[d.revisao]]
 }
 
 pred temBug[p:Projeto]{
