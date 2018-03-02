@@ -1,6 +1,6 @@
 module bugTracking
 
--- ver questao de que o time só analisa projetos depois de todos os bugs corrigidos
+-- falta só ver como (ou se deve) sinalizar que um bug foi corrigido
 -- como saber se tem bugs antes do time encontrar -encontra bug em todos os codigos ?
 
 open util/ordering[Dia] as do
@@ -104,9 +104,13 @@ fact{
 }
 
 -- o time nao pode trabalhar dois dias consecutivos para um mesmo cliente
+-- o codigo a ser revisado é o mais recente daquele cliente
+-- codigos em correcao nao devem ser revisados
 fact {
 	all d:Dia | cliente[d.revisao] != cliente[(d.next).revisao]
-	all d:Dia | d.revisao = lastC[cliente[d.revisao]]
+--	all d:Dia, c: d.revisao | ! (c in d.correcao)
+--	all d:Dia | d.revisao = lastC[cliente[d.revisao]]
+	all d:Dia | d.revisao = last[codigos[cliente[d.revisao]] - d.correcao]
 }
 
 pred temBug[p:Projeto]{
@@ -133,6 +137,10 @@ fun bugados[c:Cliente]: set Projeto{
 	c.projetos & ProjetoBugado
 }
 
+fun last[c:Codigo] : one Codigo {
+	c - c.^prev
+}
+
 -- acha a versao do codigo mais recente para um dado cliente
 fun lastC[c:Cliente] : one Codigo{
 	codigos[c] - codigos[c].^prev
@@ -142,4 +150,4 @@ pred show[]{
 	--#Cliente = 2
 }
 
-run show for 5 but 7 Dia
+run show for 10 but 7 Dia
