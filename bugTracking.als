@@ -100,7 +100,7 @@ fact {
 -- os bugs encontrados em um dia tem de pertencer ao codigo sendo analisado naquele dia
 -- e todo bug tem de estar nos identificados de algum dia
 fact{
-	all d:Dia, b:d.identificado | b = d.revisao.bugs
+	all d:Dia, b:d.identificado | b = d.revisao.bugs - d.corrigido
 	all b:Bug | b in Dia.identificado
 }
 
