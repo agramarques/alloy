@@ -100,7 +100,7 @@ fact {
 -- os bugs encontrados em um dia tem de pertencer ao codigo sendo analisado naquele dia
 -- e todo bug tem de estar nos identificados de algum dia
 fact{
-	all d:Dia, b:d.identificado | b in d.revisao.bugs
+	all d:Dia, b:d.identificado | b = d.revisao.bugs
 	all b:Bug | b in Dia.identificado
 }
 
@@ -158,4 +158,4 @@ pred show[]{
 	--#Cliente = 2
 }
 
-run show for 10
+run show for 10 but 15 Dia
