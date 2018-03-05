@@ -79,7 +79,7 @@ fact {
 	all c:Codigo | one c.~codigo
 }
 
--- cada relatoria so pertence a um bug
+-- cada relatorio so pertence a um bug
 fact {
 	all r:Relatorio | one r.~relatorio
 }
@@ -116,8 +116,6 @@ fact{
 -- codigos em correcao nao devem ser revisados
 fact {
 	all d:Dia | cliente[d.revisao] != cliente[(d.next).revisao]
---	all d:Dia, c: d.revisao | ! (c in d.correcao)
---	all d:Dia | d.revisao = lastC[cliente[d.revisao]]
 	all d:Dia | d.revisao = last[codigos[cliente[d.revisao]] - d.correcao]
 }
 
@@ -136,11 +134,6 @@ pred sucessoCorrecao[d:Dia]{
 	#(d.corrigido) > 0
 }
 
--- funçao de comparação entre codigos pra realizar a ordenação do subconjunto (achar o mais recente por cliente)
-fun maior[c1,c2 : Codigo] : one Codigo {
-	(c1 in c2.^next) => c1 else c2
-}
-	
 -- retorna o cliente que possui o codigo pra facilitar o acesso
 fun cliente[c:Codigo] : one Cliente {
 	c.~codigo.~subPastas.~raiz.~projetos
@@ -156,6 +149,7 @@ fun bugados[c:Cliente]: set Projeto{
 	c.projetos & ProjetoBugado
 }
 
+-- encontra a versão mais recente entre um conjunto de códigos
 fun last[c:Codigo] : one Codigo {
 	c - c.^prev
 }
@@ -164,6 +158,22 @@ fun last[c:Codigo] : one Codigo {
 fun lastC[c:Cliente] : one Codigo{
 	codigos[c] - codigos[c].^prev
 }
+
+-- checa que nenhum codigo pode ser revisado enquanto ainda está sendo corrigido
+assert semDuplaAlocacao{
+	all d:Dia, b:d.revisao | b not in d.correcao
+}
+
+check semDuplaAlocacao for 10 but 15 Dia
+
+-- checa que nenhum codigo pode pertencer a mais de um cliente
+-- justifica o uso do one no retorno da fun cliente
+assert umClientePorCodigo{
+	all c:Codigo | #c.~codigo.~subPastas.~raiz.~projetos = 1
+}
+
+check umClientePorCodigo for 10 but 15 Dia
+	
 
 pred show[]{
 	--#Cliente = 2
