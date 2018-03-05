@@ -121,8 +121,19 @@ fact {
 	all d:Dia | d.revisao = last[codigos[cliente[d.revisao]] - d.correcao]
 }
 
+-- checa se um dado projeto possui bugs
 pred temBug[p:Projeto]{
 	#(p.raiz.subPastas.codigo.bugs) > 0
+}
+
+-- checa se a equipe de revisão encontrou bugs em um determinado dia
+pred sucessoRevisao[d:Dia]{
+	#(d.identificado) > 0
+}
+
+-- checa se a equipe de desenvolvimento corrigiu bugs em um determinado dia
+pred sucessoCorrecao[d:Dia]{
+	#(d.corrigido) > 0
 }
 
 -- funçao de comparação entre codigos pra realizar a ordenação do subconjunto (achar o mais recente por cliente)
