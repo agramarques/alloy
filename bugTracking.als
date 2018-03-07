@@ -173,7 +173,13 @@ assert umClientePorCodigo{
 }
 
 check umClientePorCodigo for 10 but 15 Dia
-	
+
+-- checa se a equipe de revisão tem trabalho todos os dias
+assert revisaoOcupada{
+	all d:Dia | #d.revisao > 0
+}
+
+check revisaoOcupada for 10 but 15 Dia
 
 pred show[]{
 	--#Cliente = 2
